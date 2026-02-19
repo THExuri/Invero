@@ -6,14 +6,14 @@ plugins {
     java
     kotlin("jvm") version "2.2.0"
     kotlin("plugin.serialization") version "2.2.0"
-    id("io.izzel.taboolib") version "2.0.27"
+    id("io.izzel.taboolib") version "2.0.31"
     `maven-publish`
 }
 
 taboolib {
 
     version {
-        taboolib = "6.2.4-65252583"
+        taboolib = "6.2.4-a3e8abb"
     }
 
     env {
@@ -38,13 +38,7 @@ taboolib {
 
     description {
         name(rootProject.name)
-
         desc("灵活强大的多功能容器 GUI 解决方案")
-
-        links {
-            name("homepage").url("https://invero.8aka.org/")
-        }
-
     }
 
     // 重定向
