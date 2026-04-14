@@ -1,4 +1,5 @@
 import io.izzel.taboolib.gradle.*
+import org.gradle.api.attributes.java.TargetJvmVersion
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
@@ -52,7 +53,7 @@ repositories {
     maven("https://jitpack.io")
     maven("https://repo.rosewooddev.io/repository/public/")
     maven("https://repo.oraxen.com/releases")
-    maven("https://repo.momirealms.net/releases/")
+    maven("https://repo.momirealms.net/snapshots")
     maven("https://nexus.phoenixdevt.fr/repository/maven-public/")
     maven("https://repo.auxilor.io/repository/maven-public/")
 }
@@ -94,8 +95,8 @@ dependencies {
     compileOnly("com.github.LoneDev6:API-ItemsAdder:3.6.3-beta-14")
 
     // CraftEngine
-    compileOnly("net.momirealms:craft-engine-core:0.0.22") { isTransitive = false }
-    compileOnly("net.momirealms:craft-engine-bukkit:0.0.22") { isTransitive = false }
+    compileOnly("net.momirealms:craft-engine-core:26.4-SNAPSHOT") { isTransitive = false }
+    compileOnly("net.momirealms:craft-engine-bukkit:26.4-SNAPSHOT") { isTransitive = false }
 
     // MMOItems
     compileOnly("io.lumine:MythicLib-dist:1.6.2-SNAPSHOT") { isTransitive = false } // Required by MMOItems API
@@ -132,7 +133,7 @@ tasks.processResources {
 // Kotlin 构建设置
 kotlin {
     compilerOptions {
-        jvmTarget = JvmTarget.JVM_1_8
+        jvmTarget = JvmTarget.JVM_21
         freeCompilerArgs = listOf(
             "-Xjvm-default=all",
             "-Xextended-compiler-checks",
@@ -144,8 +145,8 @@ kotlin {
 
 // Java 构建设置
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
 
 // 编码设置
