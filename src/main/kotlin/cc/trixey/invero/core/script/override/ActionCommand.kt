@@ -12,6 +12,66 @@ import java.util.concurrent.CompletableFuture
  */
 class ActionCommand(val command: ParsedAction<*>, private val type: Type) : ScriptAction<Void>() {
 
+    companion object {
+
+        private const val OUTSIDE_INLINE_LEFT_BRACKET = "__INVERO_OUTSIDE_INLINE_LEFT_BRACKET__"
+        private const val OUTSIDE_INLINE_RIGHT_BRACKET = "__INVERO_OUTSIDE_INLINE_RIGHT_BRACKET__"
+
+        /**
+         * Protect selector brackets like @e[...] from inline parser side effects.
+         * Keep brackets inside {{ ... }} intact so Kether expressions still work.
+         */
+        private fun protectOutsideInlineBrackets(source: String): String {
+            if (source.indexOf('[') == -1 && source.indexOf(']') == -1) {
+                return source
+            }
+            val builder = StringBuilder(source.length + 32)
+            var index = 0
+            var inlineDepth = 0
+            while (index < source.length) {
+                if (index + 1 < source.length && source[index] == '{' && source[index + 1] == '{') {
+                    inlineDepth++
+                    builder.append("{{")
+                    index += 2
+                    continue
+                }
+                if (inlineDepth > 0 && index + 1 < source.length && source[index] == '}' && source[index + 1] == '}') {
+                    inlineDepth--
+                    builder.append("}}")
+                    index += 2
+                    continue
+                }
+                when (source[index]) {
+                    '[' -> {
+                        if (inlineDepth == 0) {
+                            builder.append(OUTSIDE_INLINE_LEFT_BRACKET)
+                        } else {
+                            builder.append('[')
+                        }
+                    }
+
+                    ']' -> {
+                        if (inlineDepth == 0) {
+                            builder.append(OUTSIDE_INLINE_RIGHT_BRACKET)
+                        } else {
+                            builder.append(']')
+                        }
+                    }
+
+                    else -> builder.append(source[index])
+                }
+                index++
+            }
+            return builder.toString()
+        }
+
+        private fun restoreOutsideInlineBrackets(source: String): String {
+            return source
+                .replace(OUTSIDE_INLINE_LEFT_BRACKET, "[")
+                .replace(OUTSIDE_INLINE_RIGHT_BRACKET, "]")
+        }
+    }
+
     enum class Type {
 
         PLAYER, OPERATOR, CONSOLE
@@ -22,7 +82,12 @@ class ActionCommand(val command: ParsedAction<*>, private val type: Type) : Scri
 
             // 虽有损耗，可以接受
             val command = it.toString().trimIndent().let { content ->
-                frame.parse(content, true)
+                restoreOutsideInlineBrackets(
+                    frame.parse(
+                        protectOutsideInlineBrackets(content),
+                        true
+                    )
+                )
             }
 
             when (type) {
