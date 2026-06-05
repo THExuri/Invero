@@ -12,6 +12,7 @@ import org.bukkit.event.inventory.InventoryType
 import taboolib.common.platform.function.submitAsync
 import taboolib.common.util.unsafeLazy
 import taboolib.library.reflex.Reflex.Companion.setProperty
+import taboolib.module.nms.MinecraftVersion.isUnobfuscated
 import taboolib.module.nms.nmsProxy
 import taboolib.module.nms.sendPacketBlocking
 
@@ -26,7 +27,8 @@ const val persistContainerId: Int = 119
 private val titleUpdating = ConcurrentSet<String>()
 
 val handler by unsafeLazy {
-    nmsProxy<NMS>()
+    if (isUnobfuscated) NMSImplModern()
+    else nmsProxy<NMS>()
 }
 
 /*
